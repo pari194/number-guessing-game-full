@@ -1,0 +1,14 @@
+number-guessing-game/
+├─ number_guessing/
+│  ├─ cli.py
+│  ├─ engine.py
+│  └─ gui.py
+├─ tests
+├─ LICENSE
+├─ Makefile
+├─ README.md
+└─ requirements.txt
+```
+
+License
+MIT 
