@@ -1,0 +1,14 @@
+import pytest
+from number_guessing.engine import NumberGuessingGame
+
+def test_game_win():
+    game = NumberGuessingGame(lower=1, upper=1)
+    result = game.guess(1)
+    assert result == "correct"
+    assert game.won
+
+def test_game_loss():
+    game = NumberGuessingGame(lower=1, upper=1, max_attempts=1)
+    game.guess(2)
+    assert not game.won
+    assert not game.can_continue()
