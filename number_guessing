@@ -1,0 +1,119 @@
+# cli code
+from number_guessing.engine import NumberGuessingGame
+
+def main():
+    print("Welcome to the Number Guessing Game!")
+    game = NumberGuessingGame()
+
+    while game.can_continue():
+        try:
+            guess = int(input("Enter your guess (1-100): "))
+        except ValueError:
+            print("Please enter a valid number.")
+            continue
+
+        result = game.guess(guess)
+        if result == "correct":
+            print(f"🎉 Correct! You guessed it in {game.attempts} attempts.")
+            break
+        elif result == "low":
+            print("📉 Too low, try again.")
+        else:
+            print("📈 Too high, try again.")
+
+    if not game.won:
+        print(f"Game over! The number was {game.secret_number}.")
+
+if __name__ == "__main__":
+    main()
+
+#engine code
+import random
+
+class NumberGuessingGame:
+    def __init__(self, lower=1, upper=100, max_attempts=10):
+        self.lower = lower
+        self.upper = upper
+        self.max_attempts = max_attempts
+        self.secret_number = random.randint(lower, upper)
+        self.attempts = 0
+        self.won = False
+
+    def guess(self, number):
+        self.attempts += 1
+        if number == self.secret_number:
+            self.won = True
+            return "correct"
+        elif number < self.secret_number:
+            return "low"
+        else:
+            return "high"
+
+    def can_continue(self):
+        return self.attempts < self.max_attempts and not self.won
+
+
+
+#gui code
+import tkinter as tk
+from tkinter import messagebox
+from number_guessing.engine import NumberGuessingGame
+
+class NumberGuessingGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Number Guessing Game 🎯")
+        self.root.geometry("400x300")
+        self.root.config(bg="#f0f4f7")
+
+        self.game = NumberGuessingGame()
+
+        self.label = tk.Label(root, text="Guess a number between 1 and 100", font=("Arial", 12), bg="#f0f4f7")
+        self.label.pack(pady=10)
+
+        self.entry = tk.Entry(root, font=("Arial", 14))
+        self.entry.pack(pady=5)
+
+        self.guess_button = tk.Button(root, text="Guess", command=self.make_guess, font=("Arial", 12), bg="#4CAF50", fg="white")
+        self.guess_button.pack(pady=5)
+
+        self.feedback = tk.Label(root, text="", font=("Arial", 12), bg="#f0f4f7")
+        self.feedback.pack(pady=5)
+
+        self.reset_button = tk.Button(root, text="New Game", command=self.reset_game, font=("Arial", 12), bg="#2196F3", fg="white")
+        self.reset_button.pack(pady=5)
+
+        self.quit_button = tk.Button(root, text="Quit", command=root.quit, font=("Arial", 12), bg="#f44336", fg="white")
+        self.quit_button.pack(pady=5)
+
+    def make_guess(self):
+        try:
+            guess = int(self.entry.get())
+        except ValueError:
+            messagebox.showwarning("Invalid Input", "Please enter a valid number.")
+            return
+
+        result = self.game.guess(guess)
+        if result == "correct":
+            self.feedback.config(text=f"🎉 Correct! You guessed in {self.game.attempts} attempts.", fg="green")
+        elif result == "low":
+            self.feedback.config(text="📉 Too low, try again.", fg="blue")
+        elif result == "high":
+            self.feedback.config(text="📈 Too high, try again.", fg="red")
+
+        if not self.game.can_continue() and not self.game.won:
+            self.feedback.config(text=f"Game over! The number was {self.game.secret_number}.", fg="black")
+
+    def reset_game(self):
+        self.game = NumberGuessingGame()
+        self.entry.delete(0, tk.END)
+        self.feedback.config(text="", fg="black")
+
+def main():
+    root = tk.Tk()
+    app = NumberGuessingGUI(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
+
